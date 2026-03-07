@@ -143,11 +143,12 @@ class EnemySelector(tk.Frame):
             if (query in e["name"].lower() or (e.get("description", "") and query in e["description"].lower()))
             and (faction == "All Factions" or e.get("faction", "other") == faction)
         ]
+        self._filtered_enemies.sort(key=lambda e: e["name"].lower())
         self.listbox.delete(0, tk.END)
         for e in self._filtered_enemies:
             fac = e.get("faction", "other")
             wc = " ★" if e.get("wild_card", False) else ""
-            self.listbox.insert(tk.END, f"{e['id']:3}. {e['name']} [{fac}]{wc} (P:{e['parry']} T:{e['toughness']})")
+            self.listbox.insert(tk.END, f"{e['name']} [{fac}]{wc} (P:{e['parry']} T:{e['toughness']})")
 
     def _on_search(self, *args):
         self._refresh_list()
