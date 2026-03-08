@@ -86,8 +86,30 @@ class EnemySelector(tk.Frame):
         search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
         ttk.Label(filter_frame, text="Faction:").pack(side=tk.LEFT, padx=(10, 5))
         self.faction_var = tk.StringVar(value="All Factions")
-        factions = ["All Factions"] + sorted(set(e.get("faction", "other") for e in self.enemies))
-        faction_combo = ttk.Combobox(filter_frame, textvariable=self.faction_var, values=factions, state="readonly", width=18)
+        _raw = set(e.get("faction", "other") for e in self.enemies)
+        _order = [
+            "imperial_forces", "rebel_forces", "separatist", "criminals", "bounty_hunters",
+            "creatures", "force_users_sith", "force_users_jedi", "republic_era", "yuuzhan_vong",
+            "broodika",
+        ]
+        _sorted = [f for f in _order if f in _raw] + sorted(_raw - set(_order))
+        _labels = {
+            "imperial_forces": "Imperial Forces",
+            "rebel_forces": "Rebel Forces",
+            "separatist": "Separatist",
+            "criminals": "Criminals",
+            "bounty_hunters": "Bounty Hunters",
+            "creatures": "Creatures",
+            "force_users_sith": "Force Users (Sith)",
+            "force_users_jedi": "Force Users (Jedi)",
+            "republic_era": "Republic Era",
+            "yuuzhan_vong": "Yuuzhan Vong",
+            "broodika": "Broodika",
+        }
+        self._faction_labels = _labels
+        self._faction_label_to_raw = {v: k for k, v in _labels.items()}
+        factions = ["All Factions"] + [_labels.get(f, f.replace("_", " ").title()) for f in _sorted]
+        faction_combo = ttk.Combobox(filter_frame, textvariable=self.faction_var, values=factions, state="readonly", width=20)
         faction_combo.pack(side=tk.LEFT, padx=(0, 5))
         self.faction_var.trace_add("write", lambda *a: self._refresh_list())
 
@@ -137,16 +159,19 @@ class EnemySelector(tk.Frame):
 
     def _refresh_list(self):
         query = self.search_var.get().strip().lower()
-        faction = self.faction_var.get()
+        faction_sel = self.faction_var.get()
+        faction_raw = self._faction_label_to_raw.get(faction_sel, faction_sel) if faction_sel != "All Factions" else None
         self._filtered_enemies = [
             e for e in self.enemies
             if (query in e["name"].lower() or (e.get("description", "") and query in e["description"].lower()))
-            and (faction == "All Factions" or e.get("faction", "other") == faction)
+            and (faction_raw is None or e.get("faction", "other") == faction_raw)
         ]
         self._filtered_enemies.sort(key=lambda e: e["name"].lower())
         self.listbox.delete(0, tk.END)
+        _labels = getattr(self, "_faction_labels", {})
         for e in self._filtered_enemies:
-            fac = e.get("faction", "other")
+            fac_raw = e.get("faction", "other")
+            fac = _labels.get(fac_raw, fac_raw.replace("_", " ").title())
             wc = " ★" if e.get("wild_card", False) else ""
             self.listbox.insert(tk.END, f"{e['name']} [{fac}]{wc} (P:{e['parry']} T:{e['toughness']})")
 
