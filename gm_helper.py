@@ -255,6 +255,9 @@ class CombatManager(tk.Frame):
             style = ttk.Style()
             style.configure("WildCard.TLabel", foreground="#B8860B")  # darkgoldenrod
             self._wild_card_style = "WildCard.TLabel"
+            style.configure("Out.TLabel", foreground="#808080")
+            style.configure("Out.TButton", foreground="#808080")
+            style.configure("Out.TCheckbutton", foreground="#808080")
         except tk.TclError:
             pass
         self.initiative_order: list[tuple] = []
@@ -264,47 +267,18 @@ class CombatManager(tk.Frame):
 
         # Draw initiative
         ttk.Button(self, text="Draw Initiative Cards", command=self._draw_initiative).pack(pady=5)
-        self.init_frame = ttk.Frame(self)
-        self.init_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Combatant cards
+        # Combatant cards (initiative + stats + tracking combined)
         self.card_frames: dict[str, ttk.Frame] = {}
+        self.scroll_frame = None
         self._build_combatant_cards()
 
     def _draw_initiative(self):
         self.initiative_order = draw_initiative(self.combatants)
-        self._refresh_initiative_display()
         self._refresh_combatant_cards()
 
-    def _refresh_initiative_display(self):
-        for w in self.init_frame.winfo_children():
-            w.destroy()
-        if not self.initiative_order:
-            ttk.Label(self.init_frame, text="Click 'Draw Initiative Cards' to start.").pack()
-            return
-        ttk.Label(self.init_frame, text="Initiative Order (Savage Worlds):").pack(anchor=tk.W)
-        for i, (c, val, card_str) in enumerate(self.initiative_order, 1):
-            name = c["display_name"]
-            status = ""
-            if name in self.eliminated:
-                status = " [OUT]"
-            elif self.shaken.get(name):
-                status = " [SHAKEN]"
-            w = self.wounds.get(name, 0)
-            penalty = self._wound_penalty(w)
-            penalty_note = f" [-{penalty}]" if penalty > 0 else ""
-            joker_note = " (+2 to rolls!)" if val == 100 else ""
-            is_wild = c.get("wild_card", False)
-            style = "WildCard.TLabel" if is_wild else "TLabel"
-            lbl = ttk.Label(
-                self.init_frame,
-                text=f"{i}. {card_str}{joker_note} - {name}{status}{penalty_note}",
-                style=style,
-            )
-            lbl.pack(anchor=tk.W)
-
     def _build_combatant_cards(self):
-        cards_container = ttk.LabelFrame(self, text="Combatant Stats & Tracking")
+        cards_container = ttk.LabelFrame(self, text="Initiative & Combat Tracking")
         cards_container.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
         canvas = tk.Canvas(cards_container)
         scrollbar = ttk.Scrollbar(cards_container)
@@ -313,15 +287,26 @@ class CombatManager(tk.Frame):
         canvas.create_window((0, 0), window=scroll_frame, anchor=tk.NW)
         canvas.configure(yscrollcommand=scrollbar.set)
         scrollbar.config(command=canvas.yview)
+        self.scroll_frame = scroll_frame
 
-        for c in self.combatants:
+        # Order: initiative order if drawn, else combatants order
+        ordered = []
+        if self.initiative_order:
+            ordered = [(c, val, card_str) for c, val, card_str in self.initiative_order]
+        else:
+            ordered = [(c, None, None) for c in self.combatants]
+
+        for i, item in enumerate(ordered, 1):
+            c = item[0]
+            val, card_str = item[1], item[2]
             name = c["display_name"]
-            self.wounds[name] = 0
-            self.shaken[name] = False
+            self.wounds[name] = self.wounds.get(name, 0)
+            self.shaken[name] = self.shaken.get(name, False)
             f = ttk.Frame(scroll_frame)
             f.pack(fill=tk.X, padx=5, pady=3)
             self.card_frames[name] = f
-            self._build_one_card(f, c)
+            init_info = (i, card_str, val == 100) if val is not None else None
+            self._build_one_card(f, c, init_info)
 
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -331,14 +316,24 @@ class CombatManager(tk.Frame):
         """Each wound = -1 to Pace and trait rolls, max -3."""
         return min(wounds, 3)
 
-    def _build_one_card(self, parent: ttk.Frame, c: dict):
+    def _build_one_card(self, parent: ttk.Frame, c: dict, init_info=None):
+        """init_info: (position, card_str, is_joker) or None."""
         name = c["display_name"]
         for w in parent.winfo_children():
             w.destroy()
         row = ttk.Frame(parent)
         row.pack(fill=tk.X)
-        row.columnconfigure(0, weight=1)
-        # Name and stats (left) - gold color for wild cards; Pace shows effective when wounded
+        row.columnconfigure(1, weight=1)
+        # Initiative column (left)
+        init_str = "—"
+        if init_info:
+            pos, card_str, is_joker = init_info
+            joker_note = " (+2!)" if is_joker else ""
+            init_str = f"{pos}. {card_str}{joker_note}"
+        init_lbl = ttk.Label(row, text=init_str, width=18, anchor=tk.W)
+        init_lbl.grid(row=0, column=0, sticky=tk.W, padx=(0, 8))
+        parent._init_lbl = init_lbl
+        # Name and stats - gold color for wild cards; Pace shows effective when wounded
         penalty = self._wound_penalty(self.wounds.get(name, 0))
         base_pace = c["pace"]
         eff_pace = max(0, base_pace - penalty)
@@ -347,31 +342,43 @@ class CombatManager(tk.Frame):
         else:
             pace_str = f"Pace:{base_pace}"
         stat_str = f"P:{c['parry']} T:{c['toughness']} {pace_str}"
+        status = ""
+        if name in self.eliminated:
+            status = " [OUT]"
+        elif self.shaken.get(name):
+            status = " [SHAKEN]"
+        if penalty > 0:
+            status += f" [-{penalty}]"
         name_style = "WildCard.TLabel" if c.get("wild_card", False) else "TLabel"
-        name_lbl = ttk.Label(row, text=f"{name} ({stat_str})", style=name_style)
-        name_lbl.grid(row=0, column=0, sticky=tk.W, padx=(0, 15))
+        name_lbl = ttk.Label(row, text=f"{name} ({stat_str}){status}", style=name_style)
+        name_lbl.grid(row=0, column=1, sticky=tk.W, padx=(0, 15))
         # Tracking section - right-aligned for consistent alignment across all cards
         track_frame = ttk.Frame(row)
-        track_frame.grid(row=0, column=1, sticky=tk.E, padx=(0, 5))
+        track_frame.grid(row=0, column=2, sticky=tk.E, padx=(0, 5))
         track_frame.columnconfigure(0, minsize=52)   # "Wounds:"
         track_frame.columnconfigure(1, minsize=24)  # Wound value
         track_frame.columnconfigure(2, minsize=28)
         track_frame.columnconfigure(3, minsize=28)
-        ttk.Label(track_frame, text="Wounds:").grid(row=0, column=0, sticky=tk.W, padx=(0, 4))
-        wound_lbl = ttk.Label(track_frame, text="0", width=3, anchor=tk.CENTER, )
+        wounds_header = ttk.Label(track_frame, text="Wounds:")
+        wounds_header.grid(row=0, column=0, sticky=tk.W, padx=(0, 4))
+        wound_lbl = ttk.Label(track_frame, text="0", width=3, anchor=tk.CENTER)
         wound_lbl.grid(row=0, column=1, padx=2, sticky=tk.EW)
-        ttk.Button(track_frame, text="-", width=2, command=lambda: self._wound_change(name, wound_lbl, -1)).grid(row=0, column=2, padx=1)
-        ttk.Button(track_frame, text="+", width=2, command=lambda: self._wound_change(name, wound_lbl, 1)).grid(row=0, column=3, padx=1)
+        minus_btn = ttk.Button(track_frame, text="-", width=2, command=lambda: self._wound_change(name, wound_lbl, -1))
+        minus_btn.grid(row=0, column=2, padx=1)
+        plus_btn = ttk.Button(track_frame, text="+", width=2, command=lambda: self._wound_change(name, wound_lbl, 1))
+        plus_btn.grid(row=0, column=3, padx=1)
         shaken_var = tk.BooleanVar(value=False)
         cb = ttk.Checkbutton(track_frame, text="Shaken", variable=shaken_var,
                              command=lambda: self._set_shaken(name, shaken_var.get()))
         cb.grid(row=0, column=4, sticky=tk.W, padx=(10, 5))
-        ttk.Button(track_frame, text="Out", command=lambda: self._eliminate(name)).grid(row=0, column=5, padx=(0, 0))
+        out_btn = ttk.Button(track_frame, text="Out", command=lambda: self._eliminate(name))
+        out_btn.grid(row=0, column=5, padx=(0, 0))
         # Store refs for updates
         parent._wound_lbl = wound_lbl
         parent._shaken_var = shaken_var
         parent._name_lbl = name_lbl
         parent._combatant = c
+        parent._out_widgets = [init_lbl, name_lbl, wounds_header, wound_lbl, minus_btn, plus_btn, cb, out_btn]
 
     def _wound_change(self, name: str, wound_lbl: ttk.Label, delta: int):
         self.wounds[name] = max(0, min(4, self.wounds.get(name, 0) + delta))
@@ -386,15 +393,32 @@ class CombatManager(tk.Frame):
 
     def _set_shaken(self, name: str, val: bool):
         self.shaken[name] = val
-        self._refresh_initiative_display()
+        self._refresh_combatant_cards()
 
     def _eliminate(self, name: str):
         self.eliminated.add(name)
         self.wounds[name] = 4  # Max wounds
-        self._refresh_initiative_display()
         self._refresh_combatant_cards()
 
     def _refresh_combatant_cards(self):
+        if not self.scroll_frame:
+            return
+        # Reorder: pack_forget all, then pack in initiative order
+        order = [(c, val, card_str) for c, val, card_str in self.initiative_order] if self.initiative_order else [(c, None, None) for c in self.combatants]
+        for f in self.card_frames.values():
+            if f.winfo_exists():
+                f.pack_forget()
+        for i, item in enumerate(order, 1):
+            c, val, card_str = item[0], item[1], item[2]
+            name = c["display_name"]
+            f = self.card_frames.get(name)
+            if f and f.winfo_exists():
+                f.pack(fill=tk.X, padx=5, pady=3)
+                # Update initiative label
+                if hasattr(f, "_init_lbl"):
+                    init_str = f"{i}. {card_str}{' (+2!)' if val == 100 else ''}" if val is not None else "—"
+                    f._init_lbl.config(text=init_str)
+        # Update wound, shaken, name/status for all cards
         for c in self.combatants:
             name = c["display_name"]
             f = self.card_frames.get(name)
@@ -405,13 +429,44 @@ class CombatManager(tk.Frame):
                     f._wound_lbl.config(text=str(w))
                 if hasattr(f, "_shaken_var"):
                     f._shaken_var.set(self.shaken.get(name, False))
-                # Update name/stat line with effective Pace
                 if hasattr(f, "_name_lbl") and hasattr(f, "_combatant"):
                     base_pace = f._combatant["pace"]
                     eff_pace = max(0, base_pace - penalty)
                     pace_str = f"Pace:{base_pace}→{eff_pace}" if penalty > 0 else f"Pace:{base_pace}"
                     stat_str = f"P:{f._combatant['parry']} T:{f._combatant['toughness']} {pace_str}"
-                    f._name_lbl.config(text=f"{name} ({stat_str})")
+                    status = ""
+                    if name in self.eliminated:
+                        status = " [OUT]"
+                    elif self.shaken.get(name):
+                        status = " [SHAKEN]"
+                    if penalty > 0:
+                        status += f" [-{penalty}]"
+                    f._name_lbl.config(text=f"{name} ({stat_str}){status}")
+                # Grey out entire row when Out
+                if hasattr(f, "_out_widgets"):
+                    if name in self.eliminated:
+                        for w in f._out_widgets:
+                            try:
+                                if isinstance(w, ttk.Label):
+                                    w.config(style="Out.TLabel")
+                                elif isinstance(w, ttk.Button):
+                                    w.config(style="Out.TButton")
+                                elif isinstance(w, ttk.Checkbutton):
+                                    w.config(style="Out.TCheckbutton")
+                            except tk.TclError:
+                                pass
+                    else:
+                        for w in f._out_widgets:
+                            try:
+                                if isinstance(w, ttk.Label):
+                                    style = "WildCard.TLabel" if w is f._name_lbl and f._combatant.get("wild_card") else "TLabel"
+                                    w.config(style=style)
+                                elif isinstance(w, ttk.Button):
+                                    w.config(style="TButton")
+                                elif isinstance(w, ttk.Checkbutton):
+                                    w.config(style="TCheckbutton")
+                            except tk.TclError:
+                                pass
         if self.reference_window and self.reference_window.winfo_exists():
             self.reference_window.update_wounds(self.wounds)
 
