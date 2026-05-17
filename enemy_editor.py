@@ -15,7 +15,7 @@ JSON_PATH = Path(__file__).parent / "starwars_enemies.json"
 FACTIONS = [
     "imperial_forces", "rebel_forces", "separatist", "criminals",
     "bounty_hunters", "creatures", "force_users_sith", "force_users_jedi",
-    "republic_era", "yuuzhan_vong", "broodika",
+    "republic_era", "yuuzhan_vong", "xenvari",
 ]
 
 

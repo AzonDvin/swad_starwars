@@ -68,7 +68,7 @@ python enemy_editor.py
 ## Stat Block Format
 
 Each enemy includes:
-- **faction** - Group for filtering (Imperial Forces, Rebel Forces, Separatist, Criminals, Bounty Hunters, Creatures, Force Users Sith/Jedi, Republic Era, Yuuzhan Vong, Broodika)
+- **faction** - Group for filtering (Imperial Forces, Rebel Forces, Separatist, Criminals, Bounty Hunters, Creatures, Force Users Sith/Jedi, Republic Era, Yuuzhan Vong, Xenvari)
 - **wild_card** - true for Savage Worlds Wild Cards (Aces)
 - **attributes** - Agility, Smarts, Spirit, Strength, Vigor (d4–d12)
 - **skills** - Fighting, Shooting, and other relevant skills
@@ -84,13 +84,13 @@ Each enemy includes:
 | Rebel Forces | Rebel Soldier, Rebel Pilot, Rebel Commando, Ewok Warrior |
 | Separatist | B1/B2 Droids, Droideka, Magnaguard, Geonosian, Neimoidian |
 | Criminals | Black Sun, Hutt Cartel, Pyke, Smuggler, Pirate |
-| Bounty Hunters | Bounty Hunter, Trandoshan Hunter, Mandalorian Bounty Hunter |
+| Bounty Hunters | Bounty Hunter, Trandoshan Hunter |
 | Creatures | Rancor, Wampa, Krayt Dragon, Acklay, Tusken, Jawas, fauna |
 | Force Users (Sith) | Sith Acolyte, Inquisitor, Nightsister, Knights of Ren |
 | Force Users (Jedi) | Jedi Padawan |
 | Republic Era | Clone Trooper, ARC Trooper, Wookiee, Gungan, Mon Calamari |
 | Yuuzhan Vong | Yuuzhan Vong Warrior, Shaper |
-| Broodika | Patriarch, Purestrain, Carnifex, Hive Tyrant, Lictor (Tyranid/Genestealer analog) |
+| Xenvari | Patriarch, Purestrain, Carnifex, Hive Tyrant, Lictor |
 
 ## Ruleset
 
