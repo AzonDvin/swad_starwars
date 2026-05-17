@@ -3193,7 +3193,7 @@
         "Notice": "d10",
         "Survival": "d10"
       },
-      "pace": 10,
+      "pace": 8,
       "parry": 7,
       "toughness": 20,
       "armor": 6,
@@ -4112,7 +4112,7 @@
         "Stealth": "d12",
         "Intimidation": "d8"
       },
-      "pace": 10,
+      "pace": 8,
       "parry": 9,
       "toughness": 8,
       "armor": 2,
@@ -4983,7 +4983,7 @@
         "Psionics": "d12",
         "Intimidation": "d12"
       },
-      "pace": 10,
+      "pace": 8,
       "parry": 9,
       "toughness": 12,
       "armor": 4,
@@ -5023,7 +5023,7 @@
         "Stealth": "d12",
         "Climbing": "d12"
       },
-      "pace": 12,
+      "pace": 10,
       "parry": 8,
       "toughness": 10,
       "armor": 3,
@@ -5465,7 +5465,7 @@
         "Psionics": "d12",
         "Knowledge (Tactics)": "d10"
       },
-      "pace": 10,
+      "pace": 8,
       "parry": 9,
       "toughness": 13,
       "armor": 5,
