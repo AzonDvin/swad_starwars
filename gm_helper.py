@@ -10,9 +10,9 @@ from pathlib import Path
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 
-# Font: Segoe UI 15pt; reference window uses 13pt
-FONT = ("Segoe UI", 15)
-REFERENCE_FONT = ("Segoe UI", 13)
+# Font: Segoe UI 12pt; reference window uses 11pt
+FONT = ("Segoe UI", 12)
+REFERENCE_FONT = ("Segoe UI", 11)
 
 # Savage Worlds standard deck for initiative
 CARD_VALUES = {
@@ -47,21 +47,30 @@ def wound_penalty(wounds: int) -> int:
 
 
 def draw_initiative(combatants: list) -> list[tuple]:
-    """Assign random initiative cards to combatants. Returns list of (combatant, card_rank, card_str)."""
+    """Assign initiative cards. Wild Cards draw two and keep the best (core SWADE rule)."""
     deck = build_deck()
     random.shuffle(deck)
     results = []
-    for i, c in enumerate(combatants):
-        if i >= len(deck):
+    card_index = 0
+
+    def draw_one():
+        nonlocal deck, card_index
+        if card_index >= len(deck):
             deck = build_deck()
             random.shuffle(deck)
-        rank, suit = deck[i]
+            card_index = 0
+        rank, suit = deck[card_index]
+        card_index += 1
         if rank == "Joker":
-            card_str = "JOKER!"
-            card_val = 100  # Joker acts first, +2 to rolls
-        else:
-            card_val = CARD_VALUES[rank]
-            card_str = f"{rank}{suit}"
+            return 100, "JOKER!"
+        return CARD_VALUES[rank], f"{rank}{suit}"
+
+    for c in combatants:
+        card_val, card_str = draw_one()
+        if c.get("wild_card", False):
+            card_val2, card_str2 = draw_one()
+            if card_val2 > card_val:
+                card_val, card_str = card_val2, card_str2
         results.append((c, card_val, card_str))
     results.sort(key=lambda x: (-x[1], x[0]["display_name"]))
     return results
@@ -76,15 +85,14 @@ class EnemySelector(tk.Frame):
         self.on_select = on_select
         self.selected: dict[str, int] = {}  # name -> quantity
 
-        # Search/filter
+        # ── Filter bar ──────────────────────────────────────────────────────────
         filter_frame = ttk.Frame(self)
-        filter_frame.pack(fill=tk.X, padx=5, pady=5)
-        ttk.Label(filter_frame, text="Search:").pack(side=tk.LEFT, padx=(0, 5))
+        filter_frame.pack(fill=tk.X, padx=8, pady=(8, 4))
+        ttk.Label(filter_frame, text="Search:").pack(side=tk.LEFT, padx=(0, 4))
         self.search_var = tk.StringVar()
         self.search_var.trace_add("write", self._on_search)
-        search_entry = ttk.Entry(filter_frame, textvariable=self.search_var, width=30)
-        search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        ttk.Label(filter_frame, text="Faction:").pack(side=tk.LEFT, padx=(10, 5))
+        ttk.Entry(filter_frame, textvariable=self.search_var, width=28).pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 12))
+        ttk.Label(filter_frame, text="Faction:").pack(side=tk.LEFT, padx=(0, 4))
         self.faction_var = tk.StringVar(value="All Factions")
         _raw = set(e.get("faction", "other") for e in self.enemies)
         _order = [
@@ -109,53 +117,50 @@ class EnemySelector(tk.Frame):
         self._faction_labels = _labels
         self._faction_label_to_raw = {v: k for k, v in _labels.items()}
         factions = ["All Factions"] + [_labels.get(f, f.replace("_", " ").title()) for f in _sorted]
-        faction_combo = ttk.Combobox(filter_frame, textvariable=self.faction_var, values=factions, state="readonly", width=20)
-        faction_combo.pack(side=tk.LEFT, padx=(0, 5))
+        ttk.Combobox(filter_frame, textvariable=self.faction_var, values=factions, state="readonly", width=22).pack(side=tk.LEFT)
         self.faction_var.trace_add("write", lambda *a: self._refresh_list())
 
-        # Enemy list
-        list_frame = ttk.Frame(self)
-        list_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        self.listbox = tk.Listbox(
-            list_frame,
-            height=15,
-            font=FONT,
-            selectmode=tk.EXTENDED,
-        )
-        scrollbar = ttk.Scrollbar(list_frame)
+        # ── Action bar (qty + buttons) ───────────────────────────────────────────
+        action_bar = ttk.Frame(self)
+        action_bar.pack(fill=tk.X, padx=8, pady=(0, 4))
+        ttk.Label(action_bar, text="Qty:").pack(side=tk.LEFT, padx=(0, 4))
+        self.qty_var = tk.StringVar(value="1")
+        ttk.Spinbox(action_bar, from_=1, to=20, textvariable=self.qty_var, width=4).pack(side=tk.LEFT, padx=(0, 8))
+        ttk.Button(action_bar, text="Add to Combat ↓", command=self._add_selected).pack(side=tk.LEFT, padx=(0, 6))
+        ttk.Button(action_bar, text="Remove Selected", command=self._remove_selected).pack(side=tk.LEFT, padx=(0, 6))
+        ttk.Button(action_bar, text="Clear All", command=self.clear_selection).pack(side=tk.LEFT)
+
+        # ── Horizontal split: list (left) | details + selected (right) ──────────
+        paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
+        paned.pack(fill=tk.BOTH, expand=True, padx=8, pady=(0, 8))
+
+        # Left: enemy listbox
+        left = ttk.Frame(paned)
+        paned.add(left, weight=2)
+        self.listbox = tk.Listbox(left, font=FONT, selectmode=tk.EXTENDED)
+        sb_left = ttk.Scrollbar(left, command=self.listbox.yview)
+        self.listbox.config(yscrollcommand=sb_left.set)
         self.listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.listbox.config(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=self.listbox.yview)
+        sb_left.pack(side=tk.RIGHT, fill=tk.Y)
         self.listbox.bind("<<ListboxSelect>>", self._on_list_select)
         self.listbox.bind("<Double-1>", self._on_double_click)
 
+        # Right: details (top, expands) + selected (bottom, fixed)
+        right = ttk.Frame(paned)
+        paned.add(right, weight=3)
+
+        detail_frame = ttk.LabelFrame(right, text="Enemy Details")
+        detail_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 6))
+        self.detail_text = scrolledtext.ScrolledText(detail_frame, font=FONT, wrap=tk.WORD, state=tk.DISABLED)
+        self.detail_text.pack(fill=tk.BOTH, expand=True, padx=6, pady=6)
+
+        sel_frame = ttk.LabelFrame(right, text="Selected for Combat")
+        sel_frame.pack(fill=tk.X)
+        self.selected_text = scrolledtext.ScrolledText(sel_frame, height=5, font=FONT, state=tk.DISABLED)
+        self.selected_text.pack(fill=tk.X, padx=6, pady=(4, 6))
+
         self._filtered_enemies: list[dict] = []
         self._refresh_list()
-
-        # Quantity and add
-        add_frame = ttk.Frame(self)
-        add_frame.pack(fill=tk.X, padx=5, pady=5)
-        ttk.Label(add_frame, text="Quantity:").pack(side=tk.LEFT, padx=(0, 5))
-        self.qty_var = tk.StringVar(value="1")
-        qty_spin = ttk.Spinbox(add_frame, from_=1, to=20, textvariable=self.qty_var, width=5)
-        qty_spin.pack(side=tk.LEFT, padx=(0, 10))
-        ttk.Button(add_frame, text="Add to Combat", command=self._add_selected).pack(side=tk.LEFT, padx=5)
-
-        # Selected summary
-        ttk.Label(self, text="Selected for combat:").pack(anchor=tk.W, padx=5, pady=(5, 0))
-        sel_btn_frame = ttk.Frame(self)
-        sel_btn_frame.pack(fill=tk.X, padx=5, pady=2)
-        ttk.Button(sel_btn_frame, text="Remove Selected", command=self._remove_selected).pack(side=tk.LEFT, padx=(0, 5))
-        ttk.Button(sel_btn_frame, text="Clear All", command=self.clear_selection).pack(side=tk.LEFT)
-        self.selected_text = scrolledtext.ScrolledText(self, height=4, font=FONT, state=tk.DISABLED)
-        self.selected_text.pack(fill=tk.X, padx=5, pady=5)
-
-        # Details panel
-        detail_frame = ttk.LabelFrame(self, text="Enemy Details")
-        detail_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
-        self.detail_text = scrolledtext.ScrolledText(detail_frame, height=8, font=FONT, state=tk.DISABLED)
-        self.detail_text.pack(fill=tk.BOTH, expand=True)
 
     def _refresh_list(self):
         query = self.search_var.get().strip().lower()
@@ -289,9 +294,15 @@ class CombatManager(tk.Frame):
         self.wounds: dict[str, int] = {}
         self.shaken: dict[str, bool] = {}
         self.eliminated: set[str] = set()
+        self.bennies: dict[str, int] = {}
+        self.round_num: int = 0
 
-        # Draw initiative
-        ttk.Button(self, text="Draw Initiative Cards", command=self._draw_initiative).pack(pady=5)
+        # Combat header: draw button + round counter on one row
+        header = ttk.Frame(self)
+        header.pack(fill=tk.X, padx=8, pady=(8, 4))
+        ttk.Button(header, text="Draw Initiative Cards", command=self._draw_initiative).pack(side=tk.LEFT, padx=(0, 16))
+        self.round_label = ttk.Label(header, text="Round: —", font=("Segoe UI", 13, "bold"))
+        self.round_label.pack(side=tk.LEFT)
 
         # Combatant cards (initiative + stats + tracking combined)
         self.card_frames: dict[str, ttk.Frame] = {}
@@ -299,6 +310,8 @@ class CombatManager(tk.Frame):
         self._build_combatant_cards()
 
     def _draw_initiative(self):
+        self.round_num += 1
+        self.round_label.config(text=f"Round: {self.round_num}")
         self.initiative_order = draw_initiative(self.combatants)
         self._refresh_combatant_cards()
 
@@ -327,6 +340,8 @@ class CombatManager(tk.Frame):
             name = c["display_name"]
             self.wounds[name] = self.wounds.get(name, 0)
             self.shaken[name] = self.shaken.get(name, False)
+            if name not in self.bennies:
+                self.bennies[name] = 3 if c.get("wild_card", False) else 0
             f = ttk.Frame(scroll_frame)
             f.pack(fill=tk.X, padx=5, pady=3)
             self.card_frames[name] = f
@@ -398,12 +413,30 @@ class CombatManager(tk.Frame):
         cb.grid(row=0, column=4, sticky=tk.W, padx=(10, 5))
         out_btn = ttk.Button(track_frame, text="Out", command=lambda: self._eliminate(name))
         out_btn.grid(row=0, column=5, padx=(0, 0))
+        # Benny tracking — Wild Cards only
+        benny_lbl = None
+        if c.get("wild_card", False):
+            track_frame.columnconfigure(6, minsize=10)   # spacer
+            track_frame.columnconfigure(7, minsize=52)   # "Bennies:"
+            track_frame.columnconfigure(8, minsize=24)   # benny value
+            track_frame.columnconfigure(9, minsize=28)
+            track_frame.columnconfigure(10, minsize=28)
+            ttk.Label(track_frame, text="Bennies:", foreground="#B8860B").grid(row=0, column=7, sticky=tk.W, padx=(10, 4))
+            benny_lbl = ttk.Label(track_frame, text=str(self.bennies.get(name, 3)), width=3, anchor=tk.CENTER)
+            benny_lbl.grid(row=0, column=8, padx=2, sticky=tk.EW)
+            ttk.Button(track_frame, text="-", width=2, command=lambda: self._benny_change(name, -1)).grid(row=0, column=9, padx=1)
+            ttk.Button(track_frame, text="+", width=2, command=lambda: self._benny_change(name, 1)).grid(row=0, column=10, padx=1)
         # Store refs for updates
         parent._wound_lbl = wound_lbl
+        parent._benny_lbl = benny_lbl
         parent._shaken_var = shaken_var
         parent._name_lbl = name_lbl
         parent._combatant = c
         parent._out_widgets = [init_lbl, name_lbl, wounds_header, wound_lbl, minus_btn, plus_btn, cb, out_btn]
+
+    def _benny_change(self, name: str, delta: int):
+        self.bennies[name] = max(0, self.bennies.get(name, 0) + delta)
+        self._refresh_combatant_cards()
 
     def _wound_change(self, name: str, wound_lbl: ttk.Label, delta: int):
         self.wounds[name] = max(0, min(4, self.wounds.get(name, 0) + delta))
@@ -452,6 +485,8 @@ class CombatManager(tk.Frame):
                 penalty = self._wound_penalty(w)
                 if hasattr(f, "_wound_lbl"):
                     f._wound_lbl.config(text=str(w))
+                if hasattr(f, "_benny_lbl") and f._benny_lbl is not None:
+                    f._benny_lbl.config(text=str(self.bennies.get(name, 0)))
                 if hasattr(f, "_shaken_var"):
                     f._shaken_var.set(self.shaken.get(name, False))
                 if hasattr(f, "_name_lbl") and hasattr(f, "_combatant"):
@@ -494,6 +529,7 @@ class CombatManager(tk.Frame):
                                 pass
         if self.reference_window and self.reference_window.winfo_exists():
             self.reference_window.update_wounds(self.wounds)
+            self.reference_window.update_eliminated(self.eliminated)
 
 
 def format_combatant_stat_block(c: dict, wounds: dict | None = None) -> str:
@@ -532,38 +568,37 @@ def format_combatant_stat_block(c: dict, wounds: dict | None = None) -> str:
     return "\n".join(lines)
 
 
-class CombatReferenceWindow(tk.Toplevel):
-    """Separate window showing each combatant instance with full stats and skills."""
+class StatBlockPanel(ttk.Frame):
+    """Embedded panel showing each combatant's full stat block, scrollable."""
 
     def __init__(self, parent, combatants: list, **kwargs):
         super().__init__(parent, **kwargs)
-        self.title("Combat Reference - Enemy Stats & Skills")
-        self.minsize(600, 500)
-        self.geometry("800x1000")
 
-        # Scrollable frame for all combatants
-        canvas = tk.Canvas(self)
-        scrollbar = ttk.Scrollbar(self)
+        ttk.Label(self, text="Stat Blocks", font=("Segoe UI", 12, "bold")).pack(anchor=tk.W, padx=8, pady=(6, 2))
+        ttk.Separator(self, orient=tk.HORIZONTAL).pack(fill=tk.X, padx=8, pady=(0, 4))
+
+        canvas = tk.Canvas(self, borderwidth=0, highlightthickness=0)
+        scrollbar = ttk.Scrollbar(self, orient=tk.VERTICAL, command=canvas.yview)
         scroll_frame = ttk.Frame(canvas)
 
         scroll_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
         canvas.create_window((0, 0), window=scroll_frame, anchor=tk.NW)
         canvas.configure(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=canvas.yview)
 
         self.combatants = combatants
         self.combatant_texts: dict[str, tuple[ttk.LabelFrame, scrolledtext.ScrolledText, dict]] = {}
         for c in combatants:
             name = c["display_name"]
+            wc_marker = " ★" if c.get("wild_card") else ""
             block = format_combatant_stat_block(c)
             line_count = len(block.splitlines())
-            text_height = max(8, min(50, line_count + 1))
-            frame = ttk.LabelFrame(scroll_frame, text=name)
-            frame.pack(fill=tk.X, padx=10, pady=5)
+            text_height = max(6, min(40, line_count + 1))
+            frame = ttk.LabelFrame(scroll_frame, text=f"{name}{wc_marker}")
+            frame.pack(fill=tk.X, padx=8, pady=4)
             text = scrolledtext.ScrolledText(frame, height=text_height, font=REFERENCE_FONT, wrap=tk.WORD, state=tk.DISABLED)
             text.config(spacing1=0, spacing2=0, spacing3=0)
-            text.tag_configure("block", lmargin1=16, lmargin2=16, rmargin=16)
-            text.pack(fill=tk.BOTH, expand=True, padx=12, pady=8)
+            text.tag_configure("block", lmargin1=12, lmargin2=12, rmargin=12)
+            text.pack(fill=tk.BOTH, expand=True, padx=8, pady=6)
             text.config(state=tk.NORMAL)
             text.insert(tk.END, block)
             text.tag_add("block", "1.0", tk.END)
@@ -573,11 +608,15 @@ class CombatReferenceWindow(tk.Toplevel):
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
-        # Enable mousewheel scrolling
-        def _on_mousewheel(event):
-            canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-        canvas.bind_all("<MouseWheel>", _on_mousewheel)
-        self.bind("<Destroy>", lambda e: canvas.unbind_all("<MouseWheel>"))
+        # Mousewheel scrolls this canvas when hovering over it
+        def _on_enter(e):
+            canvas.bind_all("<MouseWheel>", lambda ev: canvas.yview_scroll(int(-1 * (ev.delta / 120)), "units"))
+        def _on_leave(e):
+            canvas.unbind_all("<MouseWheel>")
+        canvas.bind("<Enter>", _on_enter)
+        canvas.bind("<Leave>", _on_leave)
+        scroll_frame.bind("<Enter>", _on_enter)
+        scroll_frame.bind("<Leave>", _on_leave)
 
     def update_wounds(self, wounds: dict):
         """Refresh stat blocks with current wound/penalty info."""
@@ -586,12 +625,25 @@ class CombatReferenceWindow(tk.Toplevel):
         for name, (frame, text_widget, c) in self.combatant_texts.items():
             block = format_combatant_stat_block(c, wounds)
             line_count = len(block.splitlines())
-            text_height = max(8, min(50, line_count + 1))
+            text_height = max(6, min(40, line_count + 1))
             text_widget.config(height=text_height, state=tk.NORMAL)
             text_widget.delete(1.0, tk.END)
             text_widget.insert(tk.END, block)
             text_widget.tag_add("block", "1.0", tk.END)
             text_widget.config(state=tk.DISABLED)
+
+    def update_eliminated(self, eliminated: set):
+        """Dim stat blocks for eliminated combatants."""
+        if not self.winfo_exists():
+            return
+        for name, (frame, text_widget, c) in self.combatant_texts.items():
+            wc_marker = " ★" if c.get("wild_card") else ""
+            if name in eliminated:
+                frame.config(text=f"{name}{wc_marker}  —  OUT")
+                text_widget.config(fg="#aaaaaa", bg="#f0f0f0")
+            else:
+                frame.config(text=f"{name}{wc_marker}")
+                text_widget.config(fg="black", bg="white")
 
 
 class GMHelperApp(tk.Tk):
@@ -600,8 +652,8 @@ class GMHelperApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Star Wars Savage Worlds GM Helper")
-        self.minsize(800, 600)
-        self.geometry("900x700")
+        self.minsize(1100, 650)
+        self.geometry("1400x850")
 
         # Load data
         try:
@@ -615,69 +667,81 @@ class GMHelperApp(tk.Tk):
             self.destroy()
             return
 
-        # Notebook for tabs
-        self.notebook = ttk.Notebook(self)
-        self.notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+        # ── Main horizontal split: left = tabs, right = stat blocks ─────────────
+        paned = ttk.PanedWindow(self, orient=tk.HORIZONTAL)
+        paned.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
-        # Tab 1: Enemy selection
+        # Left pane: notebook with Select + Combat tabs
+        left = ttk.Frame(paned)
+        paned.add(left, weight=3)
+
+        self.notebook = ttk.Notebook(left)
+        self.notebook.pack(fill=tk.BOTH, expand=True)
+
         self.selector = EnemySelector(self.notebook, self.enemies, self._on_combat_ready)
         self.notebook.add(self.selector, text="1. Select Enemies")
 
-        # Tab 2: Combat (created when starting combat)
         self.combat_frame = ttk.Frame(self.notebook)
         self.notebook.add(self.combat_frame, text="2. Combat")
+        self._show_combat_placeholder()
+
+        self.combat_manager: StatBlockPanel | None = None
+
+        # Right pane: stat block panel
+        self.right_pane = ttk.Frame(paned)
+        paned.add(self.right_pane, weight=2)
+        self.stat_panel: StatBlockPanel | None = None
+        self._show_stat_placeholder()
+
+    def _show_combat_placeholder(self):
         ttk.Label(
             self.combat_frame,
-            text="Add enemies in the 'Select Enemies' tab, then click 'Start Combat' below.",
-        ).pack(pady=20, padx=20)
-        self.combat_btn = ttk.Button(
-            self.combat_frame,
-            text="Start Combat",
-            command=self._start_combat,
-        )
-        self.combat_btn.pack(pady=10)
-        self.combat_manager: CombatManager | None = None
-        self.reference_window: CombatReferenceWindow | None = None
+            text="Select enemies in Tab 1, then click Start Combat.",
+            wraplength=300,
+        ).pack(pady=30, padx=20)
+        ttk.Button(self.combat_frame, text="Start Combat", command=self._start_combat).pack(pady=8)
+
+    def _show_stat_placeholder(self):
+        for w in self.right_pane.winfo_children():
+            w.destroy()
+        ttk.Label(
+            self.right_pane,
+            text="Enemy stat blocks will appear here once combat starts.",
+            wraplength=200,
+            justify=tk.CENTER,
+        ).pack(expand=True)
 
     def _on_combat_ready(self):
-        pass  # Optional callback
+        pass
 
     def _start_combat(self):
         combatants = self.selector.get_combatants()
         if not combatants:
             messagebox.showinfo("No Combatants", "Select at least one enemy in the 'Select Enemies' tab first.")
             return
-        # Open reference window with each enemy instance's stats and skills
-        self.reference_window = CombatReferenceWindow(self, combatants)
-        # Clear old combat manager
+
+        # Populate right pane with stat blocks
+        for w in self.right_pane.winfo_children():
+            w.destroy()
+        self.stat_panel = StatBlockPanel(self.right_pane, combatants)
+        self.stat_panel.pack(fill=tk.BOTH, expand=True)
+
+        # Build combat manager in Tab 2
         for w in self.combat_frame.winfo_children():
             w.destroy()
-        self.combat_manager = CombatManager(self.combat_frame, combatants, self.reference_window)
+        self.combat_manager = CombatManager(self.combat_frame, combatants, self.stat_panel)
         self.combat_manager.pack(fill=tk.BOTH, expand=True)
-        ttk.Button(
-            self.combat_frame,
-            text="New Combat (Clear & Reselect)",
-            command=self._new_combat,
-        ).pack(pady=5)
-        self.notebook.select(1)  # Switch to combat tab
-
+        ttk.Button(self.combat_frame, text="New Combat (Clear & Reselect)", command=self._new_combat).pack(pady=5)
+        self.notebook.select(1)
 
     def _new_combat(self):
-        if self.reference_window and self.reference_window.winfo_exists():
-            self.reference_window.destroy()
-            self.reference_window = None
         self.selector.clear_selection()
         for w in self.combat_frame.winfo_children():
             w.destroy()
-        ttk.Label(
-            self.combat_frame,
-            text="Add enemies in the 'Select Enemies' tab, then click 'Start Combat' below.",
-        ).pack(pady=20, padx=20)
-        ttk.Button(
-            self.combat_frame,
-            text="Start Combat",
-            command=self._start_combat,
-        ).pack(pady=10)
+        self._show_combat_placeholder()
+        self._show_stat_placeholder()
+        self.stat_panel = None
+        self.combat_manager = None
         self.notebook.select(0)
 
 

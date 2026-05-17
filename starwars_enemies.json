@@ -332,48 +332,6 @@
       "wild_card": false
     },
     {
-      "id": 10,
-      "name": "Mandalorian Super Commando",
-      "attributes": {
-        "Agility": "d10",
-        "Smarts": "d8",
-        "Spirit": "d8",
-        "Strength": "d10",
-        "Vigor": "d10"
-      },
-      "skills": {
-        "Fighting": "d12",
-        "Shooting": "d12",
-        "Notice": "d10",
-        "Stealth": "d8",
-        "Piloting": "d10"
-      },
-      "pace": 8,
-      "parry": 10,
-      "toughness": 13,
-      "armor": 6,
-      "hindrances": [],
-      "edges": [
-        "Combat Reflexes",
-        "First Strike",
-        "Marksman",
-        "Frenzy",
-        "Improved Block"
-      ],
-      "gear": [
-        "Heavy blaster (2d10, 30/60/120)",
-        "Beskar armor",
-        "Jetpack",
-        "Darksaber or vibroblade"
-      ],
-      "special_abilities": [
-        "Fear -2"
-      ],
-      "description": "Elite Imperial Mandalorian warrior.",
-      "faction": "imperial_forces",
-      "wild_card": true
-    },
-    {
       "id": 11,
       "name": "Praetorian Guard",
       "attributes": {
@@ -390,7 +348,7 @@
         "Intimidation": "d10"
       },
       "pace": 8,
-      "parry": 10,
+      "parry": 9,
       "toughness": 11,
       "armor": 4,
       "hindrances": [],
@@ -568,7 +526,7 @@
       },
       "pace": 6,
       "parry": 5,
-      "toughness": 7,
+      "toughness": 9,
       "armor": 3,
       "hindrances": [],
       "edges": [],
@@ -601,8 +559,8 @@
       },
       "pace": 6,
       "parry": 5,
-      "toughness": 6,
-      "armor": 2,
+      "toughness": 8,
+      "armor": 3,
       "hindrances": [
         "Loyal"
       ],
@@ -2826,45 +2784,6 @@
       "wild_card": true
     },
     {
-      "id": 80,
-      "name": "Mandalorian Bounty Hunter",
-      "attributes": {
-        "Agility": "d10",
-        "Smarts": "d8",
-        "Spirit": "d8",
-        "Strength": "d8",
-        "Vigor": "d8"
-      },
-      "skills": {
-        "Fighting": "d10",
-        "Shooting": "d12",
-        "Notice": "d8",
-        "Tracking": "d10",
-        "Survival": "d8"
-      },
-      "pace": 8,
-      "parry": 8,
-      "toughness": 10,
-      "armor": 4,
-      "hindrances": [],
-      "edges": [
-        "Marksman",
-        "Combat Reflexes",
-        "First Strike"
-      ],
-      "gear": [
-        "Mandalorian blaster (2d8+1, 24/48/96)",
-        "Wrist rocket",
-        "Beskar armor"
-      ],
-      "special_abilities": [
-        "Fear -1"
-      ],
-      "description": "Mandalorian hunter for hire.",
-      "faction": "bounty_hunters",
-      "wild_card": true
-    },
-    {
       "id": 81,
       "name": "Trandoshan Hunter",
       "attributes": {
@@ -3858,7 +3777,7 @@
       },
       "pace": 10,
       "parry": 8,
-      "toughness": 10,
+      "toughness": 7,
       "armor": 0,
       "hindrances": [
         "Bloodthirsty"
@@ -4523,7 +4442,7 @@
       },
       "pace": 6,
       "parry": 5,
-      "toughness": 8,
+      "toughness": 6,
       "armor": 0,
       "hindrances": [
         "Pacifist"
@@ -4539,47 +4458,6 @@
       "description": "Peaceful Ithorian, rarely hostile.",
       "faction": "republic_era",
       "wild_card": false
-    },
-    {
-      "id": 127,
-      "name": "Mandalorian Warrior",
-      "attributes": {
-        "Agility": "d10",
-        "Smarts": "d8",
-        "Spirit": "d8",
-        "Strength": "d8",
-        "Vigor": "d8"
-      },
-      "skills": {
-        "Fighting": "d12",
-        "Shooting": "d12",
-        "Notice": "d8",
-        "Survival": "d8",
-        "Piloting": "d8"
-      },
-      "pace": 8,
-      "parry": 9,
-      "toughness": 11,
-      "armor": 5,
-      "hindrances": [],
-      "edges": [
-        "Combat Reflexes",
-        "First Strike",
-        "Marksman",
-        "Frenzy"
-      ],
-      "gear": [
-        "Mandalorian blaster rifle (2d8+1, 24/48/96)",
-        "Beskar armor",
-        "Jetpack",
-        "Vibroblade"
-      ],
-      "special_abilities": [
-        "Fear -1"
-      ],
-      "description": "Elite warrior from Mandalore.",
-      "faction": "republic_era",
-      "wild_card": true
     },
     {
       "id": 128,
@@ -4831,7 +4709,7 @@
       },
       "pace": 6,
       "parry": 4,
-      "toughness": 7,
+      "toughness": 9,
       "armor": 3,
       "hindrances": [],
       "edges": [],
@@ -5040,7 +4918,7 @@
       },
       "pace": 6,
       "parry": 4,
-      "toughness": 7,
+      "toughness": 9,
       "armor": 3,
       "hindrances": [],
       "edges": [],
@@ -5072,7 +4950,7 @@
       },
       "pace": 6,
       "parry": 4,
-      "toughness": 7,
+      "toughness": 9,
       "armor": 3,
       "hindrances": [],
       "edges": [
@@ -5106,8 +4984,8 @@
         "Intimidation": "d12"
       },
       "pace": 10,
-      "parry": 10,
-      "toughness": 14,
+      "parry": 9,
+      "toughness": 12,
       "armor": 4,
       "hindrances": [],
       "edges": [
@@ -5146,8 +5024,8 @@
         "Climbing": "d12"
       },
       "pace": 12,
-      "parry": 10,
-      "toughness": 12,
+      "parry": 8,
+      "toughness": 10,
       "armor": 3,
       "hindrances": [],
       "edges": [
@@ -5219,7 +5097,7 @@
       },
       "pace": 6,
       "parry": 6,
-      "toughness": 8,
+      "toughness": 6,
       "armor": 0,
       "hindrances": [
         "Fanatic"
@@ -5386,7 +5264,7 @@
       },
       "pace": 8,
       "parry": 8,
-      "toughness": 11,
+      "toughness": 9,
       "armor": 2,
       "hindrances": [],
       "edges": [
@@ -5409,18 +5287,17 @@
         "Agility": "d10",
         "Smarts": "d6",
         "Spirit": "d8",
-        "Strength": "d10",
-        "Vigor": "d10"
+        "Strength": "d8",
+        "Vigor": "d6"
       },
       "skills": {
-        "Fighting": "d10",
-        "Shooting": "d6",
+        "Fighting": "d8",
         "Notice": "d8",
         "Stealth": "d8"
       },
       "pace": 10,
-      "parry": 8,
-      "toughness": 10,
+      "parry": 6,
+      "toughness": 7,
       "armor": 2,
       "hindrances": [],
       "edges": [
@@ -5453,8 +5330,8 @@
         "Tracking": "d12"
       },
       "pace": 10,
-      "parry": 10,
-      "toughness": 11,
+      "parry": 8,
+      "toughness": 10,
       "armor": 3,
       "hindrances": [],
       "edges": [
@@ -5489,7 +5366,7 @@
       },
       "pace": 6,
       "parry": 4,
-      "toughness": 9,
+      "toughness": 7,
       "armor": 2,
       "hindrances": [],
       "edges": [],
@@ -5589,8 +5466,8 @@
         "Knowledge (Tactics)": "d10"
       },
       "pace": 10,
-      "parry": 10,
-      "toughness": 15,
+      "parry": 9,
+      "toughness": 13,
       "armor": 5,
       "hindrances": [],
       "edges": [
@@ -5629,7 +5506,7 @@
       },
       "pace": 12,
       "parry": 8,
-      "toughness": 11,
+      "toughness": 9,
       "armor": 2,
       "hindrances": [],
       "edges": [
