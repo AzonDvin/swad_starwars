@@ -4967,7 +4967,7 @@
     },
     {
       "id": 144,
-      "name": "Broodika Patriarch",
+      "name": "Xenovart Patriarch",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d12",
@@ -5003,12 +5003,12 @@
         "Fear -2"
       ],
       "description": "Ancient patriarch of the brood; psychic hive-node and cult leader.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 145,
-      "name": "Broodika Broodlord",
+      "name": "Xenovart Broodlord",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d10",
@@ -5041,12 +5041,12 @@
         "Fear -1"
       ],
       "description": "Elite purestrain leader; deadly in close combat.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 146,
-      "name": "Broodika Purestrain",
+      "name": "Xenovart Purestrain",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d6",
@@ -5075,12 +5075,12 @@
         "Wall-crawler"
       ],
       "description": "Pure infiltration strain; four-armed killing machine.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 147,
-      "name": "Broodika Hybrid Cultist",
+      "name": "Xenovart Hybrid Cultist",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d6",
@@ -5111,12 +5111,12 @@
         "Broodmind link"
       ],
       "description": "Genetically corrupted hybrid; cult agent of the brood.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 148,
-      "name": "Broodika Aberrant",
+      "name": "Xenovart Aberrant",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d4",
@@ -5146,12 +5146,12 @@
         "Size +2"
       ],
       "description": "Hulking mutated hybrid; shock troops of the cult.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 149,
-      "name": "Broodika Swarmling",
+      "name": "Xenovart Swarmling",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d4",
@@ -5179,12 +5179,12 @@
         "Swarm"
       ],
       "description": "Tiny swarm organism; devours biomass in waves.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 150,
-      "name": "Broodika Shooter",
+      "name": "Xenovart Shooter",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d6",
@@ -5209,12 +5209,12 @@
         "Claws (Str+d6)"
       ],
       "description": "Ranged strain; living bio-weapon artillery.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 151,
-      "name": "Broodika Leaper",
+      "name": "Xenovart Leaper",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d4",
@@ -5243,12 +5243,12 @@
         "Frenzy"
       ],
       "description": "Fast melee strain; bounding into close combat.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 152,
-      "name": "Broodika Warrior",
+      "name": "Xenovart Warrior",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d8",
@@ -5277,12 +5277,12 @@
         "Bio-weapon (2d8, 24/48/96)"
       ],
       "description": "Synapse creature; coordinates lesser strains.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 153,
-      "name": "Broodika Ravener",
+      "name": "Xenovart Ravener",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d6",
@@ -5310,12 +5310,12 @@
         "Deep strike"
       ],
       "description": "Burrowing assault strain; emerges from below.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 154,
-      "name": "Broodika Lictor",
+      "name": "Xenovart Lictor",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d10",
@@ -5346,12 +5346,12 @@
         "Fear -1"
       ],
       "description": "Elite infiltrator; lone hunter that strikes from the shadows.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 155,
-      "name": "Broodika Zoanthrope",
+      "name": "Xenovart Zoanthrope",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d12",
@@ -5379,12 +5379,12 @@
         "Floating"
       ],
       "description": "Psychic strain; warps reality to strike foes.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 156,
-      "name": "Broodika Biovore",
+      "name": "Xenovart Biovore",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d8",
@@ -5409,12 +5409,12 @@
         "Living mines"
       ],
       "description": "Living artillery; launches symbiotic spore mines.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 157,
-      "name": "Broodika Carnifex",
+      "name": "Xenovart Carnifex",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d6",
@@ -5445,12 +5445,12 @@
         "Fear -2"
       ],
       "description": "Heavy assault beast; living tank of the brood.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 158,
-      "name": "Broodika Hive Tyrant",
+      "name": "Xenovart Hive Tyrant",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d12",
@@ -5485,12 +5485,12 @@
         "Fear -2"
       ],
       "description": "Apex predator; commands the brood and crushes resistance.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 159,
-      "name": "Broodika Harpy",
+      "name": "Xenovart Harpy",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d6",
@@ -5519,12 +5519,12 @@
         "Scything talons (Str+d8)"
       ],
       "description": "Flying assault beast; strafes from above.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 160,
-      "name": "Broodika Gargoyle",
+      "name": "Xenovart Gargoyle",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d4",
@@ -5551,12 +5551,12 @@
         "Talons (Str+d6)"
       ],
       "description": "Flying swarm strain; skies blacken with their numbers.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 161,
-      "name": "Broodika Venomthrope",
+      "name": "Xenovart Venomthrope",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d8",
@@ -5582,12 +5582,12 @@
         "Shrouding"
       ],
       "description": "Toxic support strain; shrouds brood in corrosive mist.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": false
     },
     {
       "id": 162,
-      "name": "Broodika Neurothrope",
+      "name": "Xenovart Neurothrope",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d12",
@@ -5616,12 +5616,12 @@
         "Mind blast"
       ],
       "description": "Psychic synapse leader; amplifies broodmind.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     },
     {
       "id": 163,
-      "name": "Broodika Trygon",
+      "name": "Xenovart Trygon",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d8",
@@ -5652,7 +5652,7 @@
         "Fear -2"
       ],
       "description": "Massive tunnel beast; breaches defenses from below.",
-      "faction": "broodika",
+      "faction": "xenovarts",
       "wild_card": true
     }
   ]
