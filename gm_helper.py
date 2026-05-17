@@ -98,7 +98,7 @@ class EnemySelector(tk.Frame):
         _order = [
             "imperial_forces", "rebel_forces", "separatist", "criminals", "bounty_hunters",
             "creatures", "force_users_sith", "force_users_jedi", "republic_era", "yuuzhan_vong",
-            "xenovarts",
+            "xenvari",
         ]
         _sorted = [f for f in _order if f in _raw] + sorted(_raw - set(_order))
         _labels = {
@@ -112,7 +112,7 @@ class EnemySelector(tk.Frame):
             "force_users_jedi": "Force Users (Jedi)",
             "republic_era": "Republic Era",
             "yuuzhan_vong": "Yuuzhan Vong",
-            "xenovarts": "Xenovarts",
+            "xenvari": "Xenvari",
         }
         self._faction_labels = _labels
         self._faction_label_to_raw = {v: k for k, v in _labels.items()}

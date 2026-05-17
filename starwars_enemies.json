@@ -4967,7 +4967,7 @@
     },
     {
       "id": 144,
-      "name": "Xenovart Patriarch",
+      "name": "Xenvari Patriarch",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d12",
@@ -5003,12 +5003,12 @@
         "Fear -2"
       ],
       "description": "Ancient patriarch of the brood; psychic hive-node and cult leader.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 145,
-      "name": "Xenovart Broodlord",
+      "name": "Xenvari Broodlord",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d10",
@@ -5041,12 +5041,12 @@
         "Fear -1"
       ],
       "description": "Elite purestrain leader; deadly in close combat.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 146,
-      "name": "Xenovart Purestrain",
+      "name": "Xenvari Purestrain",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d6",
@@ -5075,12 +5075,12 @@
         "Wall-crawler"
       ],
       "description": "Pure infiltration strain; four-armed killing machine.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 147,
-      "name": "Xenovart Hybrid Cultist",
+      "name": "Xenvari Hybrid Cultist",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d6",
@@ -5111,12 +5111,12 @@
         "Broodmind link"
       ],
       "description": "Genetically corrupted hybrid; cult agent of the brood.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 148,
-      "name": "Xenovart Aberrant",
+      "name": "Xenvari Aberrant",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d4",
@@ -5146,12 +5146,12 @@
         "Size +2"
       ],
       "description": "Hulking mutated hybrid; shock troops of the cult.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 149,
-      "name": "Xenovart Swarmling",
+      "name": "Xenvari Swarmling",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d4",
@@ -5179,12 +5179,12 @@
         "Swarm"
       ],
       "description": "Tiny swarm organism; devours biomass in waves.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 150,
-      "name": "Xenovart Shooter",
+      "name": "Xenvari Shooter",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d6",
@@ -5209,12 +5209,12 @@
         "Claws (Str+d6)"
       ],
       "description": "Ranged strain; living bio-weapon artillery.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 151,
-      "name": "Xenovart Leaper",
+      "name": "Xenvari Leaper",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d4",
@@ -5243,12 +5243,12 @@
         "Frenzy"
       ],
       "description": "Fast melee strain; bounding into close combat.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 152,
-      "name": "Xenovart Warrior",
+      "name": "Xenvari Warrior",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d8",
@@ -5277,12 +5277,12 @@
         "Bio-weapon (2d8, 24/48/96)"
       ],
       "description": "Synapse creature; coordinates lesser strains.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 153,
-      "name": "Xenovart Ravener",
+      "name": "Xenvari Ravener",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d6",
@@ -5310,12 +5310,12 @@
         "Deep strike"
       ],
       "description": "Burrowing assault strain; emerges from below.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 154,
-      "name": "Xenovart Lictor",
+      "name": "Xenvari Lictor",
       "attributes": {
         "Agility": "d12",
         "Smarts": "d10",
@@ -5346,12 +5346,12 @@
         "Fear -1"
       ],
       "description": "Elite infiltrator; lone hunter that strikes from the shadows.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 155,
-      "name": "Xenovart Zoanthrope",
+      "name": "Xenvari Zoanthrope",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d12",
@@ -5379,12 +5379,12 @@
         "Floating"
       ],
       "description": "Psychic strain; warps reality to strike foes.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 156,
-      "name": "Xenovart Biovore",
+      "name": "Xenvari Biovore",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d8",
@@ -5409,12 +5409,12 @@
         "Living mines"
       ],
       "description": "Living artillery; launches symbiotic spore mines.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 157,
-      "name": "Xenovart Carnifex",
+      "name": "Xenvari Carnifex",
       "attributes": {
         "Agility": "d6",
         "Smarts": "d6",
@@ -5445,12 +5445,12 @@
         "Fear -2"
       ],
       "description": "Heavy assault beast; living tank of the brood.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 158,
-      "name": "Xenovart Hive Tyrant",
+      "name": "Xenvari Hive Tyrant",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d12",
@@ -5485,12 +5485,12 @@
         "Fear -2"
       ],
       "description": "Apex predator; commands the brood and crushes resistance.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 159,
-      "name": "Xenovart Harpy",
+      "name": "Xenvari Harpy",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d6",
@@ -5519,12 +5519,12 @@
         "Scything talons (Str+d8)"
       ],
       "description": "Flying assault beast; strafes from above.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 160,
-      "name": "Xenovart Gargoyle",
+      "name": "Xenvari Gargoyle",
       "attributes": {
         "Agility": "d10",
         "Smarts": "d4",
@@ -5551,12 +5551,12 @@
         "Talons (Str+d6)"
       ],
       "description": "Flying swarm strain; skies blacken with their numbers.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 161,
-      "name": "Xenovart Venomthrope",
+      "name": "Xenvari Venomthrope",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d8",
@@ -5582,12 +5582,12 @@
         "Shrouding"
       ],
       "description": "Toxic support strain; shrouds brood in corrosive mist.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": false
     },
     {
       "id": 162,
-      "name": "Xenovart Neurothrope",
+      "name": "Xenvari Neurothrope",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d12",
@@ -5616,12 +5616,12 @@
         "Mind blast"
       ],
       "description": "Psychic synapse leader; amplifies broodmind.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     },
     {
       "id": 163,
-      "name": "Xenovart Trygon",
+      "name": "Xenvari Trygon",
       "attributes": {
         "Agility": "d8",
         "Smarts": "d8",
@@ -5652,7 +5652,7 @@
         "Fear -2"
       ],
       "description": "Massive tunnel beast; breaches defenses from below.",
-      "faction": "xenovarts",
+      "faction": "xenvari",
       "wild_card": true
     }
   ]
